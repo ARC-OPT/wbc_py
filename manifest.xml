@@ -1,0 +1,33 @@
+<package>
+  <description brief="Python bindings for the WBC library of the ARC-OPT framework.">
+  The WBC library contains various implementations of whole-body feedback control approaches on velocity-, acceleration- and force/torque-level. It is meant for controlling robots with redundant degrees of freedom, like
+  humanoids or other legged robots with floating base, but also fixed-base systems like mobile manipulators, dual-arm systems or even simple manipulators. It is also meant for controlling multiple tasks simultaneously
+  while taking into account the physical constraints of the robot. E.g., on a humanoid robot do ... (1) keep balance (2) Grasp an object with one arm (3) maintaining an upright body posture (4) Consider the joint torque limits,
+  etc... WBC is a purely reactive approach, i.e., it does not involve any motion planning or trajectory optimization. However, it can be used to stabilize trajectories coming from a motion planner or trajectory optimizer
+  and integrate them with other objectives and physical constraints of the robot.
+  </description>
+  <author>Dennis Mronga/dennis.mronga@dfki.de</author>
+  <maintainer>Dennis Mronga/dennis.mronga@dfki.de</maintainer>
+  <license></license>
+  <url>https://github.com/ARC-OPT/wbc_py</url>
+  <logo>https://github.com/ARC-OPT/wbc_py/doc/images/arcopt_logo_v3_github.jpg</logo>
+  <tags>stable</tags>
+  <keywords>
+     <keyword>Control</keyword>
+     <keyword>Whole-Body Control</keyword>
+     <keyword>Optimization</keyword>
+     <keyword>Redundancy Resolution</keyword>
+   </keywords>
+
+  <stage>2</stage>
+  <use>single project</use>
+  <activity>active</activity>
+
+  <classifiers>
+    <classifier>rock</classifier>
+    <classifier>ubuntu</classifier>
+    <classifier>python</classifier>
+  </classifiers>
+
+  <depend package="control/wbc" />
+</package>

@@ -1,0 +1,4 @@
+build/
+*.sw?
+doc/*
+!doc/images
