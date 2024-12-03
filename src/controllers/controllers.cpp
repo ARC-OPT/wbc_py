@@ -2,11 +2,11 @@
 
 namespace wbc_py {
 JointPosPDController::JointPosPDController(const std::vector<std::string> &joint_names) :
-    ctrl_lib::JointPosPDController(joint_names){
+    wbc::JointPosPDController(joint_names){
 }
 base::NamedVector<base::JointState> JointPosPDController::update(const base::NamedVector<base::JointState> &setpoint,
                                                                  const base::NamedVector<base::JointState> &feedback){
-    return toNamedVector(ctrl_lib::JointPosPDController::update(tobaseSamplesJoints(setpoint), tobaseSamplesJoints(feedback)));
+    return toNamedVector(wbc::JointPosPDController::update(tobaseSamplesJoints(setpoint), tobaseSamplesJoints(feedback)));
 }
 }
 
@@ -14,19 +14,19 @@ BOOST_PYTHON_MODULE(controllers){
 
     np::initialize();
 
-    py::class_<ctrl_lib::CartesianPosPDController>("CartesianPosPDController")
-            .def("update", &ctrl_lib::CartesianPosPDController::update, py::return_value_policy<py::copy_const_reference>())
-            .def("setPGain", &ctrl_lib::CartesianPosPDController::setPGain)
-            .def("setDGain", &ctrl_lib::CartesianPosPDController::setDGain)
-            .def("setFFGain", &ctrl_lib::CartesianPosPDController::setFFGain)
-            .def("setMaxCtrlOutput", &ctrl_lib::CartesianPosPDController::setMaxCtrlOutput)
-            .def("setDeadZone", &ctrl_lib::CartesianPosPDController::setDeadZone)
-            .def("pGain", &ctrl_lib::CartesianPosPDController::pGain, py::return_value_policy<py::copy_const_reference>())
-            .def("dGain", &ctrl_lib::CartesianPosPDController::dGain, py::return_value_policy<py::copy_const_reference>())
-            .def("ffGain", &ctrl_lib::CartesianPosPDController::ffGain, py::return_value_policy<py::copy_const_reference>())
-            .def("maxCtrlOutput", &ctrl_lib::CartesianPosPDController::maxCtrlOutput, py::return_value_policy<py::copy_const_reference>())
-            .def("deadZone", &ctrl_lib::CartesianPosPDController::deadZone, py::return_value_policy<py::copy_const_reference>())
-            .def("getControlError", &ctrl_lib::CartesianPosPDController::getControlError);
+    py::class_<wbc::CartesianPosPDController>("CartesianPosPDController")
+            .def("update", &wbc::CartesianPosPDController::update, py::return_value_policy<py::copy_const_reference>())
+            .def("setPGain", &wbc::CartesianPosPDController::setPGain)
+            .def("setDGain", &wbc::CartesianPosPDController::setDGain)
+            .def("setFFGain", &wbc::CartesianPosPDController::setFFGain)
+            .def("setMaxCtrlOutput", &wbc::CartesianPosPDController::setMaxCtrlOutput)
+            .def("setDeadZone", &wbc::CartesianPosPDController::setDeadZone)
+            .def("pGain", &wbc::CartesianPosPDController::pGain, py::return_value_policy<py::copy_const_reference>())
+            .def("dGain", &wbc::CartesianPosPDController::dGain, py::return_value_policy<py::copy_const_reference>())
+            .def("ffGain", &wbc::CartesianPosPDController::ffGain, py::return_value_policy<py::copy_const_reference>())
+            .def("maxCtrlOutput", &wbc::CartesianPosPDController::maxCtrlOutput, py::return_value_policy<py::copy_const_reference>())
+            .def("deadZone", &wbc::CartesianPosPDController::deadZone, py::return_value_policy<py::copy_const_reference>())
+            .def("getControlError", &wbc::CartesianPosPDController::getControlError);
 
     py::class_<wbc_py::JointPosPDController>("JointPosPDController", py::init<std::vector<std::string>>())
             .def("update", &wbc_py::JointPosPDController::update)

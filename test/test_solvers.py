@@ -46,4 +46,4 @@ def test_qp_oases_solver():
     assert(solver.getReturnValue() == 0)
 
 if __name__ == '__main__':
-    test_qp_oases_solver()
+    nose.run()

@@ -9,7 +9,7 @@
 
 namespace wbc_py {
 
-class JointPosPDController : public ctrl_lib::JointPosPDController{
+class JointPosPDController : public wbc::JointPosPDController{
 public:
     JointPosPDController(const std::vector<std::string> &joint_names);
     base::NamedVector<base::JointState> update(const base::NamedVector<base::JointState> &setpoint,
