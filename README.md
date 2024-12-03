@@ -1,6 +1,3 @@
-[![Ubuntu 20.04](https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test_ubuntu20.04.yml/badge.svg)](https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test_ubuntu20.04.yml)
-[![Ubuntu 22.04](https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test_ubuntu22.04.yml/badge.svg)](https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test_ubuntu22.04.yml)
-
 # wbc_py - Python bindings for the ARC-OPT WBC Library
 
 [Code API](https://arc-opt.github.io/wbc/index.html)  | [Full Documentation](https://arc-opt.github.io/Documentation/)
@@ -23,7 +20,12 @@ See the [manifest.xml](https://github.com/ARC-OPT/wbc/blob/master/manifest.xml) 
 
 ## Testing
 
-Please check the unit tests [here](https://github.com/ARC-OPT/wbc/tree/master/test), as well the [tutorials](https://github.com/ARC-OPT/wbc/tree/master/tutorials)
+To run nosetests, you can run
+```
+cd test
+nosetests3
+```
+You can also check the [examples](https://github.com/ARC-OPT/wbc_py/tree/master/examples).
 
 ## Contributing
 
