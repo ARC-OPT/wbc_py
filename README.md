@@ -1,6 +1,6 @@
 # wbc_py - Python bindings for the ARC-OPT WBC Library
 
-[Code API](https://arc-opt.github.io/wbc/index.html)  | [Full Documentation](https://arc-opt.github.io/Documentation/)
+[Code API](https://arc-opt.github.io/wbc_py/index.html)  | [Full Documentation](https://arc-opt.github.io/Documentation/)
 
 WBC is C++ library for optimization-based control of redundant robots. It allows intuitive specification and execution of reactive robot control problems that involve multiple simultaneously running tasks. 
 
