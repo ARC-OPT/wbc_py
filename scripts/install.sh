@@ -3,7 +3,7 @@ sudo apt-get -y install python3-dev python3-numpy python3-nose libboost-python-d
 git clone git@github.com:ARC-OPT/wbc_py.git
 mkdir wbc_py/build
 cd wbc_py/build
-cmake .. & make -j8
+cmake .. && make -j8
 sudo make install
 
 
