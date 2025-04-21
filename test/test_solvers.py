@@ -1,4 +1,3 @@
-from wbc.solvers.hls_solver import *
 from wbc.solvers.qpoases_solver import *
 from wbc.core import *
 import nose
@@ -25,15 +24,6 @@ def run(solver):
     solver_output = solver.solve(hqp)
     y_solution = np.array(qp.A).dot(solver_output)
     assert np.all(np.isclose(y_solution - y_ref,np.zeros(nj)))
-
-def test_hierarchial_ls_solver():
-    solver = HierarchicalLSSolver()
-    solver.setMaxSolverOutputNorm(100.0)
-    assert solver.getMaxSolverOutputNorm() == 100.0
-    solver.setMinEigenvalue(1e-7)
-    assert solver.getMinEigenvalue() == 1e-7
-
-    run(solver)
 
 def test_qp_oases_solver():
     solver = QPOASESSolver()

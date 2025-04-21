@@ -1,5 +1,4 @@
-from wbc.robot_models.robot_model_rbdl import *
-from wbc.scenes.velocity_scene import *
+from wbc.robot_models.robot_model_pinocchio import *
 from wbc.scenes.velocity_scene_qp import *
 from wbc.scenes.acceleration_scene import *
 from wbc.scenes.acceleration_scene_tsid import *

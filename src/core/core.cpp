@@ -3,149 +3,144 @@
 #include "../wbc_types_conversions.h"
 #include <wbc/core/RobotModelConfig.hpp>
 #include <wbc/core/TaskConfig.hpp>
-#include <wbc/core/TaskStatus.hpp>
 #include <wbc/core/QuadraticProgram.hpp>
-#include <base/JointLimits.hpp>
+#include <wbc/types/JointLimits.hpp>
 #include <boost/python/enum.hpp>
+#include <wbc/types/Contact.hpp>
+#include <wbc/types/RigidBodyState.hpp>
+#include <wbc/types/Wrench.hpp>
+#include <wbc/types/JointState.hpp>
+#include <wbc/types/JointCommand.hpp>
 
 BOOST_PYTHON_MODULE(core){
 
     np::initialize();
 
-    pygen::convertMatrix<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::DontAlign>>();
-    pygen::convertVector<Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::DontAlign>>();
+    pygen::convertMatrix<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::AutoAlign, -1 , -1>>();    
+    pygen::convertVector<Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::AutoAlign, -1, 1>>();
     pygen::convertStdVector<std::vector<std::string>>();
     pygen::convertStdVector<std::vector<double>>();
     pygen::convertStdVector<std::vector<int>>();
     pygen::convertStdVector<std::vector<wbc::QuadraticProgram>>();
-    pygen::convertStdVector<std::vector<base::JointState>>();
-    pygen::convertStdVector<std::vector<base::JointLimitRange>>();
-    pygen::convertStdVector<std::vector<base::Wrench>>();
     pygen::convertStdVector<std::vector<wbc::TaskConfig>>();
-    pygen::convertStdVector<std::vector<wbc::ActiveContact>>();
-    pygen::convertVector<Eigen::Matrix<double, 3, 1, Eigen::DontAlign>>();
-    pygen::convertVector<Eigen::Matrix<double, 6, 1, Eigen::DontAlign>>();
-    pygen::convertTransform<Eigen::Transform<double, 3, Eigen::DontAlign>>();
-    pygen::convertQuaternion<Eigen::Quaternion<double, Eigen::DontAlign>>();
-    pygen::convertStdVector<std::vector<wbc::TaskStatus>>();
+    pygen::convertStdVector<std::vector<wbc::types::Contact>>();
+    pygen::convertVector<Eigen::Matrix<double, 3, 1, Eigen::AutoAlign>>();
+    pygen::convertVector<Eigen::Matrix<double, 6, 1, Eigen::AutoAlign>>();
+    pygen::convertQuaternion<Eigen::Quaternion<double, Eigen::AutoAlign>>();
 
-    py::class_<base::Pose>("Pose")
+    py::class_<wbc::types::Pose>("Pose")
             .add_property("position",
-                py::make_getter(&base::Pose::position, py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&base::Pose::position))
+                py::make_getter(&wbc::types::Pose::position, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::Pose::position))
             .add_property("orientation",
-                py::make_getter(&base::Pose::orientation, py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&base::Pose::orientation))
-            .def("toVector6d", &base::Pose::toVector6d)
-            .def("toTransform", &base::Pose::toTransform)
-            .def("fromTransform", &base::Pose::fromTransform);
+                py::make_getter(&wbc::types::Pose::orientation, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::Pose::orientation));
 
-    py::class_<base::Twist>("Twist")
+    py::class_<wbc::types::Twist>("Twist")
             .add_property("linear",
-                py::make_getter(&base::Twist::linear,py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&base::Twist::linear))
+                py::make_getter(&wbc::types::Twist::linear,py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::Twist::linear))
             .add_property("angular",
-                py::make_getter(&base::Twist::angular, py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&base::Twist::angular));
+                py::make_getter(&wbc::types::Twist::angular, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::Twist::angular));
 
-    py::class_<base::Acceleration>("Acceleration")
+    py::class_<wbc::types::SpatialAcceleration>("SpatialAcceleration")
             .add_property("linear",
-                py::make_getter(&base::Acceleration::linear,py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&base::Acceleration::linear))
+                py::make_getter(&wbc::types::SpatialAcceleration::linear,py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::SpatialAcceleration::linear))
             .add_property("angular",
-                py::make_getter(&base::Acceleration::angular, py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&base::Acceleration::angular));
+                py::make_getter(&wbc::types::SpatialAcceleration::angular, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::SpatialAcceleration::angular));
 
-    py::class_<base::Wrench>("Wrench")
+    py::class_<wbc::types::Wrench>("Wrench")
             .add_property("force",
-                py::make_getter(&base::Wrench::force,py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&base::Wrench::force))
+                py::make_getter(&wbc::types::Wrench::force,py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::Wrench::force))
             .add_property("torque",
-                py::make_getter(&base::Wrench::torque, py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&base::Wrench::torque));
+                py::make_getter(&wbc::types::Wrench::torque, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::Wrench::torque));
 
-    py::class_<base::NamedVector<base::Wrench>>("Wrenches")
-            .add_property("names",
-                py::make_getter(&base::NamedVector<base::Wrench>::names,py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&base::NamedVector<base::Wrench>::names))
-            .add_property("elements",
-                py::make_getter(&base::NamedVector<base::Wrench>::elements, py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&base::NamedVector<base::Wrench>::elements));
+    py::class_<wbc::types::RigidBodyState>("RigidBodyState")
+            .add_property("pose",
+                py::make_getter(&wbc::types::RigidBodyState::pose, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::RigidBodyState::pose))
+            .add_property("twist",
+                py::make_getter(&wbc::types::RigidBodyState::twist, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::RigidBodyState::twist))
+            .add_property("acceleration",
+                py::make_getter(&wbc::types::RigidBodyState::acceleration, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::RigidBodyState::acceleration));
 
-    py::class_<base::RigidBodyStateSE3>("baseRigidBodyStateSE3")
-            .def_readwrite("pose", &base::RigidBodyStateSE3::pose)
-            .def_readwrite("twist", &base::RigidBodyStateSE3::twist)
-            .def_readwrite("acceleration", &base::RigidBodyStateSE3::acceleration)
-            .def_readwrite("wrench", &base::RigidBodyStateSE3::wrench);
+   py::class_<wbc::types::JointState>("JointState")
+            .add_property("position",
+                py::make_getter(&wbc::types::JointState::position, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::JointState::position))
+            .add_property("velocity",
+                py::make_getter(&wbc::types::JointState::velocity, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::JointState::velocity))
+            .add_property("acceleration",
+                py::make_getter(&wbc::types::JointState::acceleration, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::JointState::acceleration));
 
-    py::class_<base::Time>("Time")
-            .def_readwrite("microseconds", &base::Time::microseconds);
+   py::class_<wbc::types::JointCommand>("JointCommand")
+            .add_property("position",
+                py::make_getter(&wbc::types::JointCommand::position, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::JointCommand::position))
+            .add_property("velocity",
+                py::make_getter(&wbc::types::JointCommand::velocity, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::JointCommand::velocity))
+            .add_property("acceleration",
+                py::make_getter(&wbc::types::JointCommand::acceleration, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::JointCommand::acceleration))
+            .add_property("effort",
+                py::make_getter(&wbc::types::JointCommand::effort, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::JointCommand::effort));
 
-    py::class_<base::samples::RigidBodyStateSE3>("RigidBodyStateSE3")
-            .def_readwrite("time", &base::samples::RigidBodyStateSE3::time)
-            .def_readwrite("pose", &base::RigidBodyStateSE3::pose)
-            .def_readwrite("twist", &base::RigidBodyStateSE3::twist)
-            .def_readwrite("acceleration", &base::RigidBodyStateSE3::acceleration)
-            .def_readwrite("wrench", &base::RigidBodyStateSE3::wrench);
+   py::class_<wbc::types::Limits>("Limits")
+            .add_property("position",
+                py::make_getter(&wbc::types::Limits::position, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::Limits::position))
+            .add_property("velocity",
+                py::make_getter(&wbc::types::Limits::velocity, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::Limits::velocity))
+            .add_property("acceleration",
+                py::make_getter(&wbc::types::Limits::acceleration, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::Limits::acceleration))
+            .add_property("effort",
+                py::make_getter(&wbc::types::Limits::effort, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::Limits::effort));
 
-   py::class_<base::JointState>("JointState")
-            .def_readwrite("position", &base::JointState::position)
-            .def_readwrite("speed", &base::JointState::speed)
-            .def_readwrite("acceleration", &base::JointState::acceleration)
-            .def_readwrite("effort", &base::JointState::effort)
-            .def_readwrite("raw", &base::JointState::raw);
 
-   py::class_<base::NamedVector<base::JointState>>("Joints")
-            .add_property("names",
-                py::make_getter(&base::NamedVector<base::JointState>::names, py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&base::NamedVector<base::JointState>::names))
-            .add_property("elements",
-                py::make_getter(&base::NamedVector<base::JointState>::elements, py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&base::NamedVector<base::JointState>::elements));
+   py::class_<wbc::types::JointLimits>("JointLimits")
+            .add_property("max",
+                py::make_getter(&wbc::types::JointLimits::max, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::JointLimits::max))
+            .add_property("min",
+                py::make_getter(&wbc::types::JointLimits::min, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::types::JointLimits::min));
 
-   py::class_<base::JointLimitRange>("JointLimitRange")
-           .add_property("min",
-               py::make_getter(&base::JointLimitRange::min, py::return_value_policy<py::copy_non_const_reference>()),
-               py::make_setter(&base::JointLimitRange::min))
-           .add_property("max",
-                         py::make_getter(&base::JointLimitRange::max, py::return_value_policy<py::copy_non_const_reference>()),
-                         py::make_setter(&base::JointLimitRange::max));
+   py::class_<wbc::types::Contact>("Contact")
+            .def_readwrite("frame_id",  &wbc::types::Contact::frame_id)
+            .def_readwrite("active",  &wbc::types::Contact::active)
+            .def_readwrite("mu",  &wbc::types::Contact::mu)
+            .def_readwrite("wx",  &wbc::types::Contact::wx)
+            .def_readwrite("wy",  &wbc::types::Contact::wy);
 
-   py::class_<base::NamedVector<base::JointLimitRange>>("JointLimits")
-            .add_property("names",
-                py::make_getter(&base::NamedVector<base::JointLimitRange>::names, py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&base::NamedVector<base::JointLimitRange>::names))
-            .add_property("elements",
-                py::make_getter(&base::NamedVector<base::JointLimitRange>::elements, py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&base::NamedVector<base::JointLimitRange>::elements));
-
-   py::class_<wbc_py::RobotModelConfig>("RobotModelConfig")
+   py::class_<wbc::RobotModelConfig>("RobotModelConfig")
             .def_readwrite("file_or_string",       &wbc::RobotModelConfig::file_or_string)
             .def_readwrite("submechanism_file",    &wbc::RobotModelConfig::submechanism_file)
             .def_readwrite("floating_base",        &wbc::RobotModelConfig::floating_base)
-            .def_readwrite("floating_base",        &wbc::RobotModelConfig::floating_base)
-            .add_property("contact_points",        &wbc_py::RobotModelConfig::getActiveContacts, &wbc_py::RobotModelConfig::setActiveContacts);
-
-   py::enum_<wbc::TaskType>("TaskType")
-       .value("unset", wbc::TaskType::unset)
-       .value("cart", wbc::TaskType::cart)
-       .value("jnt", wbc::TaskType::jnt);
+            .add_property("contact_points",
+                py::make_getter(&wbc::RobotModelConfig::contact_points, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::RobotModelConfig::contact_points));
 
    py::class_<wbc::TaskConfig>("TaskConfig")
             .def_readwrite("name",       &wbc::TaskConfig::name)
-            .def_readwrite("type",       &wbc::TaskConfig::type)
             .def_readwrite("priority",   &wbc::TaskConfig::priority)
             .add_property("weights",
                 py::make_getter(&wbc::TaskConfig::weights, py::return_value_policy<py::copy_non_const_reference>()),
                 py::make_setter(&wbc::TaskConfig::weights))
-            .def_readwrite("activation", &wbc::TaskConfig::activation)
-            .def_readwrite("timeout",    &wbc::TaskConfig::timeout)
-            .add_property("joint_names",
-                py::make_getter(&wbc::TaskConfig::joint_names, py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&wbc::TaskConfig::joint_names))
-            .def_readwrite("root",       &wbc::TaskConfig::root)
-            .def_readwrite("tip",        &wbc::TaskConfig::tip)
-            .def_readwrite("ref_frame",  &wbc::TaskConfig::ref_frame);
+            .def_readwrite("activation", &wbc::TaskConfig::activation);
 
    py::class_<wbc::QuadraticProgram>("QuadraticProgram")
            .add_property("A",
@@ -192,49 +187,4 @@ BOOST_PYTHON_MODULE(core){
            py::make_getter(&wbc::HierarchicalQP::Wq, py::return_value_policy<py::copy_non_const_reference>()),
            py::make_setter(&wbc::HierarchicalQP::Wq))
        .def("resize",  &wbc::HierarchicalQP::resize);
-
-   py::class_<base::NamedVector<double>>("JointWeights")
-       .add_property("names",
-           py::make_getter(&wbc::JointWeights::names, py::return_value_policy<py::copy_non_const_reference>()),
-           py::make_setter(&wbc::JointWeights::names))
-       .add_property("elements",
-           py::make_getter(&wbc::JointWeights::elements, py::return_value_policy<py::copy_non_const_reference>()),
-           py::make_setter(&wbc::JointWeights::elements));
-
-   py::class_<wbc::ActiveContact>("ActiveContact")
-           .def_readwrite("active", &wbc::ActiveContact::active)
-           .def_readwrite("mu",     &wbc::ActiveContact::mu);
-
-   py::class_<base::NamedVector<wbc::ActiveContact>>("ActiveContacts")
-       .add_property("names",
-           py::make_getter(&wbc::ActiveContacts::names, py::return_value_policy<py::copy_non_const_reference>()),
-           py::make_setter(&wbc::ActiveContacts::names))
-       .add_property("elements",
-           py::make_getter(&wbc::ActiveContacts::elements, py::return_value_policy<py::copy_non_const_reference>()),
-           py::make_setter(&wbc::ActiveContacts::elements));
-
-   py::class_<wbc::TaskStatus>("TaskStatus")
-       .def_readwrite("config",  &wbc::TaskStatus::config)
-       .def_readwrite("activation",  &wbc::TaskStatus::activation)
-       .def_readwrite("timeout",  &wbc::TaskStatus::timeout)
-       .add_property("weights",
-                     py::make_getter(&wbc::TaskStatus::weights, py::return_value_policy<py::copy_non_const_reference>()),
-                     py::make_setter(&wbc::TaskStatus::weights))
-       .add_property("y_ref",
-                     py::make_getter(&wbc::TaskStatus::y_ref, py::return_value_policy<py::copy_non_const_reference>()),
-                     py::make_setter(&wbc::TaskStatus::y_ref))
-       .add_property("y_solution",
-                     py::make_getter(&wbc::TaskStatus::y_solution, py::return_value_policy<py::copy_non_const_reference>()),
-                     py::make_setter(&wbc::TaskStatus::y_solution))
-       .add_property("y",
-                     py::make_getter(&wbc::TaskStatus::y, py::return_value_policy<py::copy_non_const_reference>()),
-                     py::make_setter(&wbc::TaskStatus::y));
-
-   py::class_<base::NamedVector<wbc::TaskStatus>>("TasksStatus")
-           .add_property("names",
-               py::make_getter(&wbc::TasksStatus::names, py::return_value_policy<py::copy_non_const_reference>()),
-               py::make_setter(&wbc::TasksStatus::names))
-           .add_property("elements",
-               py::make_getter(&wbc::TasksStatus::elements, py::return_value_policy<py::copy_non_const_reference>()),
-               py::make_setter(&wbc::TasksStatus::elements));
 }

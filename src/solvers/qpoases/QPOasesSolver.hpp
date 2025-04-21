@@ -2,14 +2,18 @@
 #define WBC_PY_QPOASES_SOLVER_HPP
 
 #include <wbc/solvers/qpoases/QPOasesSolver.hpp>
+#include <wbc/core/QuadraticProgram.hpp>
 
 namespace wbc_py {
-
-
 class QPOASESSolver : public wbc::QPOASESSolver{
 public:
-    base::VectorXd solve(const wbc::HierarchicalQP &hqp);
-    int getReturnValueAsInt();
+    QPOASESSolver() : wbc::QPOASESSolver(){
+    }
+    Eigen::VectorXd solve(wbc::HierarchicalQP hqp){
+        Eigen::VectorXd solver_output;
+        wbc::QPOASESSolver::solve(hqp, solver_output);
+        return solver_output;
+    }
 };
 }
 

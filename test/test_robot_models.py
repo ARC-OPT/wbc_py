@@ -1,5 +1,5 @@
 from wbc.core import *
-from wbc.robot_models.robot_model_rbdl import *
+from wbc.robot_models.robot_model_pinocchio import *
 import numpy as np
 import nose
 
@@ -9,40 +9,41 @@ def run(robot_model):
     tip_link = "LLAnkle_FT"
     nj = len(joint_names)
     gravity_vector = [0,0,-9.81]
-    contacts = ActiveContacts()
-    contacts.names = ["RH5_Root_link", "LLAnkle_FT"]
-    a = ActiveContact()
+    a = Contact()
     a.mu = 0.6
     a.active = 1
-    contacts.elements = [a,a]
 
     r=RobotModelConfig()
     r.file_or_string="../models/rh5/urdf/rh5_single_leg.urdf"
     r.floating_base = False
     assert robot_model.configure(r) == True
 
-    joint_state = Joints()
-    joint_state.names = joint_names
-    js = JointState()
-    js.position = js.speed = js.acceleration = 0.1
-    joint_state.elements = [js]*len(joint_names)
-    robot_model.update(joint_state)
+    qp = QuadraticProgram()
+    qp.g = []
+    floating_base_state = RigidBodyState()
+    joint_state = JointState()
+    print(joint_state.position)
+    joint_state.position = np.array([0.1]*6)
+    joint_state.velocity = np.array([0.1]*6)
+    joint_state.acceleration = np.array([0.1]*6)
+    robot_model.update(joint_state.position, joint_state.velocity, joint_state.acceleration,
+                       floating_base_state.pose, floating_base_state.twist, floating_base_state.acceleration)
 
-    robot_model.jointState(joint_names) == joint_state
-    rbs = robot_model.rigidBodyState(root_link, tip_link)
-    space_jacobian = robot_model.spaceJacobian(root_link, tip_link)
-    body_jacobian  = robot_model.bodyJacobian(root_link, tip_link)
+    robot_model.jointState() == joint_state
+    pose = robot_model.pose(tip_link)
+    twist = robot_model.twist(tip_link)
+    acceleration = robot_model.acceleration(tip_link)
+    space_jacobian = robot_model.spaceJacobian(tip_link)
+    body_jacobian  = robot_model.bodyJacobian(tip_link)
 
-    twist = np.array(body_jacobian).dot(np.array([js.speed]*nj))
-    assert np.all(np.isclose(twist[0:3] - rbs.twist.linear, np.array([0]*3)))
-    assert np.all(np.isclose(twist[3:6] - rbs.twist.angular, np.array([0]*3)))
+    twist_new = np.array(space_jacobian).dot(joint_state.velocity)
+    assert np.all(np.isclose(twist_new[0:3] - twist.linear, np.array([0]*3)))
+    assert np.all(np.isclose(twist_new[3:6] - twist.angular, np.array([0]*3)))
 
-    bias_acc = robot_model.spatialAccelerationBias(root_link, tip_link)
-    accel = np.append(bias_acc.linear,bias_acc.angular) + space_jacobian.dot(np.array([js.acceleration]*nj))
-    assert np.all(np.isclose(accel[0:3] - rbs.acceleration.linear, np.array([0]*3)))
-    assert np.all(np.isclose(accel[3:6] - rbs.acceleration.angular, np.array([0]*3)))
-
-    #jac_dot = robot_model.jacobianDot(root_link,tip_link)
+    bias_acc = robot_model.spatialAccelerationBias(tip_link)
+    accel = np.append(bias_acc.linear,bias_acc.angular) + space_jacobian.dot(joint_state.acceleration)
+    assert np.all(np.isclose(accel[0:3] - acceleration.linear, np.array([0]*3)))
+    assert np.all(np.isclose(accel[3:6] - acceleration.angular, np.array([0]*3)))
 
     inertia_mat = robot_model.jointSpaceInertiaMatrix()
     assert inertia_mat.shape[0] == nj
@@ -71,19 +72,28 @@ def run(robot_model):
     assert robot_model.hasActuatedJoint("LLKnee_F") == False
 
     cog = robot_model.centerOfMass()
+    
+    a = Contact()
+    a.mu = 0.6
+    a.active = 1
+    a.frame_id = "contact_1"
+    b = Contact()
+    b.mu = 0.6
+    b.active = 0
+    b.frame_id = "contact_2"
+    contacts = [a,b]
 
-    robot_model.setActiveContacts(contacts)
-    robot_model.getActiveContacts() == contacts
+    robot_model.setContacts(contacts)
+    robot_model.getContacts() == contacts
 
-    assert robot_model.noOfJoints() == nj
-    assert robot_model.noOfActuatedJoints() == nj
+    assert robot_model.nj() == nj
+    assert robot_model.na() == nj
+    assert robot_model.nc() == 2
+    assert robot_model.nac() == 1
 
-    robot_model.setGravityVector([0,0,-9.81])
 
-    robot_model.getRobotModelConfig() == r
-
-def test_robot_model_rbdl():
-    run(RobotModelRBDL())
+def test_robot_model_pinocchio():
+    run(RobotModelPinocchio())
 
 if __name__ == '__main__':
     nose.run()

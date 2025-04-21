@@ -1,37 +1,44 @@
 from wbc.core import *
-from wbc.robot_models.robot_model_rbdl import RobotModelRBDL
-from wbc.scenes.velocity_scene import VelocityScene
-from wbc.solvers.hls_solver import HierarchicalLSSolver
+from wbc.robot_models.robot_model_pinocchio import RobotModelPinocchio
+from wbc.scenes.velocity_scene_qp import VelocitySceneQP
+from wbc.solvers.qpoases_solver import QPOASESSolver
 from wbc.controllers import CartesianPosPDController
+from wbc.tasks import SpatialVelocityTask
 import time
 import numpy as np
 
 # Configure robot model
-robot_model=RobotModelRBDL()
+robot_model=RobotModelPinocchio()
 r=RobotModelConfig()
 r.file_or_string="../../models/kuka/urdf/kuka_iiwa.urdf"
 if robot_model.configure(r) == False:
     print("Failed to configure robot model  ")
     exit(0)
-
+    
+# Initial joint state
+position = np.array([0.0]*7)
+velocity = np.array([0.0]*7)
+acceleration = np.array([0.0]*7)
+floating_base_state = RigidBodyState()
+robot_model.update(position, velocity, acceleration, 
+                   floating_base_state.pose, floating_base_state.twist, floating_base_state.acceleration) 
+                   
 # Create solver
-solver = HierarchicalLSSolver()
-solver.setMaxSolverOutputNorm(10)
+solver = QPOASESSolver()
 
 # Set up Tasks: Only a single, Cartesian positioning task
 cfg = TaskConfig()
 cfg.name = "tcp_pose"
-cfg.root = "kuka_lbr_l_link_0"
-cfg.tip = "kuka_lbr_l_tcp"
-cfg.ref_frame = "kuka_lbr_l_link_0"
 cfg.priority = 0
 cfg.activation = 1
-cfg.type = TaskType.cart
 cfg.weights = [1]*6
 
+
 # Configure WBC Scene
-scene=VelocityScene(robot_model, solver, 0.001)
-if scene.configure([cfg]) == False:
+task = SpatialVelocityTask(cfg, robot_model, "kuka_lbr_l_tcp", "kuka_lbr_l_link_0")
+scene=VelocitySceneQP(robot_model, solver, 0.001)
+scene.addSpatialVelocityTask(task)
+if scene.configure() == False:
     print("Failed to configure scene")
     exit(0)
 
@@ -40,47 +47,40 @@ ctrl = CartesianPosPDController()
 ctrl.setPGain([3]*6)
 
 # Target Pose
-setpoint = RigidBodyStateSE3()
-setpoint.pose.position  = [0.0,0.0,0.8]
-setpoint.pose.orientation = [0,0,0,1]
+setpoint_pose = Pose()
+setpoint_twist = Twist()
+setpoint_pose.position  = [0.0,0.0,0.95]
+setpoint_pose.orientation = [0,0,0,1]
+setpoint_twist.linear = [0,0,0]
+setpoint_twist.angular = [0,0,0]
 
 # Actual pose
-feedback = RigidBodyStateSE3()
-feedback.pose.position  = [0.0,0.0,0.0]
-feedback.pose.orientation = [0,0,0,1]
-control_output = RigidBodyStateSE3()
-
-# Initial joint state
-joint_state = Joints()
-js = JointState()
-js.position = 0.1
-joint_state.elements = [js]*robot_model.noOfJoints()
-joint_state.names = robot_model.jointNames()
+feedback = Pose()
+feedback.position = [0,0,0]
+feedback.orientation = [0,0,0,1]
+control_output = Twist()
 
 start = time.time()
-
 # Control Loop
 sample_time = 0.01
-while np.linalg.norm(setpoint.pose.position-feedback.pose.position) > 1e-4:
+while np.linalg.norm(setpoint_pose.position-feedback.position) > 1e-4:
+    
+    robot_model.update(position, velocity, acceleration,
+                       floating_base_state.pose, floating_base_state.twist, floating_base_state.acceleration)
+    control_output = ctrl.updateVel(setpoint_pose, setpoint_twist, feedback)
+    feedback = robot_model.pose("kuka_lbr_l_tcp")
 
-    robot_model.update(joint_state)
-
-    feedback = robot_model.rigidBodyState(cfg.root, cfg.tip)
-    control_output = ctrl.update(setpoint,feedback)
-
-    scene.setReference(cfg.name,control_output)
+    task.setReference(control_output)
     qp = scene.update()
     solver_output = scene.solve(qp)
-
-    # We have to update the joint state in this unintuitive way for now, since the [] operator for the Joints-type is not exposed to python yet....
-    js = joint_state.elements
-    for i in range(robot_model.noOfJoints()):
-        js[i].position = js[i].position + solver_output.elements[i].speed * sample_time
-    joint_state.elements = js
-
+        
+    for i in range(robot_model.nj()):
+        position[i] = position[i] + solver_output.velocity[i] * sample_time
+        
+    print(solver_output.velocity)
     print("Time: [" + str(time.time()-start) + " sec]")
-    print("Ref. Pos:  %.4f %.4f %.4f"  % (setpoint.pose.position[0],setpoint.pose.position[1],setpoint.pose.position[2]))
-    print("Act. Pos:  %.4f %.4f %.4f"  % (feedback.pose.position[0],feedback.pose.position[1],feedback.pose.position[2]))
-    print("Ctrl. Out: %.4f %.4f %.4f"  % (control_output.twist.linear[0],control_output.twist.linear[1],control_output.twist.linear[2]))
+    print("Ref. Pos:  %.4f %.4f %.4f"  % (setpoint_pose.position[0],setpoint_pose.position[1],setpoint_pose.position[2]))
+    print("Act. Pos:  %.4f %.4f %.4f"  % (feedback.position[0],feedback.position[1],feedback.position[2]))
+    print("Ctrl. Out: %.4f %.4f %.4f"  % (control_output.linear[0],control_output.linear[1],control_output.linear[2]))
     print("-------------------------------------------")
     time.sleep(sample_time)

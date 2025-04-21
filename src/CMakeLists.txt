@@ -18,6 +18,7 @@ add_subdirectory(controllers)
 add_subdirectory(robot_models)
 add_subdirectory(scenes)
 add_subdirectory(solvers)
+add_subdirectory(tasks)
 
 install(FILES __init__.py
         DESTINATION ${PYTHON_INSTALL_PATH}/wbc)
