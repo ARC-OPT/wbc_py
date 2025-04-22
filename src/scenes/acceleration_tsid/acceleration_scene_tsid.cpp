@@ -1,6 +1,6 @@
+#include "acceleration_scene_tsid.hpp"
 #include "../../eigen_conversion.h"
 #include "../../std_vector_conversion.h"
-#include "acceleration_scene_tsid.hpp"
 
 namespace wbc_py{
     AccelerationSceneTSID::AccelerationSceneTSID(std::shared_ptr<wbc::RobotModelPinocchio> robot_model, std::shared_ptr<wbc_py::QPOASESSolver> solver, const double dt) : 

@@ -1,7 +1,7 @@
+#include <wbc/robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include "../../eigen_conversion.h"
 #include "../../std_vector_conversion.h"
 #include "../../wbc_types_conversions.h"
-#include <wbc/robot_models/pinocchio/RobotModelPinocchio.hpp>
 
 BOOST_PYTHON_MODULE(robot_model_pinocchio){
 

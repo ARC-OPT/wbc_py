@@ -1,6 +1,6 @@
+#include "velocity_scene_qp.hpp"
 #include "../../eigen_conversion.h"
 #include "../../std_vector_conversion.h"
-#include "velocity_scene_qp.hpp"
 
 namespace wbc_py{
     VelocitySceneQP::VelocitySceneQP(std::shared_ptr<wbc::RobotModelPinocchio> robot_model, std::shared_ptr<wbc_py::QPOASESSolver> solver, const double dt) : 

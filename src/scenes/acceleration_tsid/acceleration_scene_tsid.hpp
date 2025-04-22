@@ -1,9 +1,9 @@
 #ifndef WBC_PY_ACCELERATION_SCENE_TSID_HPP
 #define WBC_PY_ACCELERATION_SCENE_TSID_HPP
 
+#include <wbc/robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include <wbc/scenes/acceleration_tsid/AccelerationSceneTSID.hpp>
 #include "../../solvers/qpoases/QPOasesSolver.hpp"
-#include <wbc/robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include <wbc/tasks/SpatialAccelerationTask.hpp>
 
 namespace wbc_py {

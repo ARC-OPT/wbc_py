@@ -1,9 +1,9 @@
 #ifndef WBC_PY_VELOCITY_SCENE_QP_HPP
 #define WBC_PY_VELOCITY_SCENE_QP_HPP
 
+#include <wbc/robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include <wbc/scenes/velocity_qp/VelocitySceneQP.hpp>
 #include "../../solvers/qpoases/QPOasesSolver.hpp"
-#include <wbc/robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include <wbc/tasks/SpatialVelocityTask.hpp>
 
 namespace wbc_py {

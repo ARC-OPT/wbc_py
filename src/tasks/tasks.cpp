@@ -1,8 +1,8 @@
+#include <wbc/robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include <wbc/tasks/SpatialVelocityTask.hpp>
 #include <wbc/tasks/SpatialAccelerationTask.hpp>
 #include <boost/python/module.hpp>
 #include <boost/python/numpy.hpp>
-#include <wbc/robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include <wbc/core/TaskConfig.hpp>
 
 namespace py = boost::python;
