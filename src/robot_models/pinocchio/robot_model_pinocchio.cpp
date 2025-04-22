@@ -1,7 +1,7 @@
 #include "../../eigen_conversion.h"
 #include "../../std_vector_conversion.h"
 #include "../../wbc_types_conversions.h"
-#include "robot_model_pinocchio.hpp"
+#include <wbc/robot_models/pinocchio/RobotModelPinocchio.hpp>
 
 BOOST_PYTHON_MODULE(robot_model_pinocchio){
 
@@ -38,6 +38,8 @@ BOOST_PYTHON_MODULE(robot_model_pinocchio){
             .def("nfb",                     &wbc::RobotModelPinocchio::nfb)
             .def("nc",                      &wbc::RobotModelPinocchio::nc)
             .def("nac",                     &wbc::RobotModelPinocchio::nac)
+            .def("setJointWeights",         &wbc::RobotModelPinocchio::setJointWeights)
+            .def("getJointWeights",         &wbc::RobotModelPinocchio::getJointWeights, py::return_value_policy<py::copy_const_reference>())
             .def("floatingBaseState",       &wbc::RobotModelPinocchio::floatingBaseState, py::return_value_policy<py::copy_const_reference>());
 }
 
